@@ -129,7 +129,7 @@
                 <h3 class="card-title">DJV I</h3>
                 <p class="card-location">Bogor Timur, Kota Bogor</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-top: 1px solid #f3f4f6; padding-top: 15px; margin-top: auto;">
-                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> 9 Pintu</p>
+                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> <span class="total-unit-text" data-id="1">9 Pintu</span></p>
                     <p class="card-price">Rp 1,2 Jt<span>/bln</span></p>
                 </div>
                 <div class="card-footer">
@@ -146,7 +146,7 @@
                 <h3 class="card-title">DJV II</h3>
                 <p class="card-location">Bogor Selatan, Kota Bogor</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-top: 1px solid #f3f4f6; padding-top: 15px; margin-top: auto;">
-                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> 2 Pintu</p>
+                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> <span class="total-unit-text" data-id="2">2 Pintu</span></p>
                     <p class="card-price">Rp 800 Rb<span>/bln</span></p>
                 </div>
                 <div class="card-footer">
@@ -163,7 +163,7 @@
                 <h3 class="card-title">DJV III</h3>
                 <p class="card-location">Caringin, Kabupaten Bogor</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-top: 1px solid #f3f4f6; padding-top: 15px; margin-top: auto;">
-                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> 12 Pintu</p>
+                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> <span class="total-unit-text" data-id="3">12 Pintu</span></p>
                     <p class="card-price">Rp 520 Rb<span>/bln</span></p>
                 </div>
                 <div class="card-footer">
@@ -180,7 +180,7 @@
                 <h3 class="card-title">Salsabilla</h3>
                 <p class="card-location">Bogor Timur, Kota Bogor</p>
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-top: 1px solid #f3f4f6; padding-top: 15px; margin-top: auto;">
-                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> 8 Pintu</p>
+                    <p class="card-details" style="margin-bottom: 0;"><i class="fa-solid fa-people-roof"></i> <span class="total-unit-text" data-id="4">8 Pintu</span></p>
                     <p class="card-price">Rp 800 Rb<span>/bln</span></p>
                 </div>
                 <div class="card-footer">
@@ -239,11 +239,11 @@
                         <p>Lokasi Strategis</p>
                     </div>
                     <div class="stat-box">
-                        <h3>31</h3>
+                        <h3 id="stat-total-pintu">31</h3>
                         <p>Pintu Eksklusif</p>
                     </div>
                     <div class="stat-box">
-                        <h3>95%</h3>
+                        <h3 id="stat-occupancy">95%</h3>
                         <p>Tingkat Keterisian</p>
                     </div>
                     <div class="stat-box">
@@ -354,12 +354,20 @@
         function processSheetData(response) {
             try {
                 const rows = response.table.rows;
+                let grandTotal = 0;
+                let grandSisa = 0;
+
                 rows.forEach(row => {
                     // row.c is the array of columns [id, nama, total, sisa]
-                    if (row.c && row.c.length >= 4 && row.c[0] && row.c[3]) {
+                    if (row.c && row.c.length >= 4 && row.c[0] && row.c[2] && row.c[3]) {
                         const id = row.c[0].v;
+                        const totalUnit = row.c[2].v;
                         const sisaUnit = row.c[3].v;
                         
+                        grandTotal += totalUnit;
+                        grandSisa += sisaUnit;
+
+                        // Update Availability Badge
                         const badge = document.querySelector(`.status-badge[data-id="${id}"]`);
                         if (badge) {
                             if (sisaUnit > 0) {
@@ -370,8 +378,63 @@
                                 badge.className = 'badge full status-badge';
                             }
                         }
+
+                        // Update Total Units Text
+                        const totalText = document.querySelector(`.total-unit-text[data-id="${id}"]`);
+                        if (totalText) {
+                            totalText.textContent = `${totalUnit} Pintu`;
+                        }
                     }
                 });
+
+                // Update Global Stats
+                const statPintu = document.getElementById('stat-total-pintu');
+                const statOccupancy = document.getElementById('stat-occupancy');
+
+                if (statPintu && statOccupancy && grandTotal > 0) {
+                    const occupied = grandTotal - grandSisa;
+                    const occRate = Math.round((occupied / grandTotal) * 100);
+
+                    // Start counter at 0 to hide initial hardcoded HTML value
+                    statPintu.textContent = "0";
+                    statOccupancy.textContent = "0%";
+
+                    const statsObserver = new IntersectionObserver((entries, observer) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                // Animate Pintu (Slower, more dramatic)
+                                let currentPintu = 0;
+                                const pintuInterval = setInterval(() => {
+                                    if (currentPintu >= grandTotal) {
+                                        statPintu.textContent = grandTotal;
+                                        clearInterval(pintuInterval);
+                                    } else {
+                                        currentPintu++;
+                                        statPintu.textContent = currentPintu;
+                                    }
+                                }, 80); // Increased from 50ms to 80ms
+
+                                // Animate Occupancy (Slower, increment by 1)
+                                let currentOcc = 0;
+                                const occInterval = setInterval(() => {
+                                    if (currentOcc >= occRate) {
+                                        statOccupancy.textContent = occRate + '%';
+                                        clearInterval(occInterval);
+                                    } else {
+                                        currentOcc += 1; // Decreased from +2 to +1
+                                        if (currentOcc > occRate) currentOcc = occRate;
+                                        statOccupancy.textContent = currentOcc + '%';
+                                    }
+                                }, 35); // Increased duration to make it roll longer
+
+                                observer.unobserve(entry.target);
+                            }
+                        });
+                    }, { threshold: 0.2 });
+
+                    const statsGrid = document.querySelector('.stats-grid');
+                    if (statsGrid) statsObserver.observe(statsGrid);
+                }
             } catch (error) {
                 console.error('Error parsing Google Sheets data:', error);
                 document.querySelectorAll('.status-badge').forEach(badge => {
@@ -611,5 +674,6 @@
     </script>
 </body>
 </html>
+
 
 

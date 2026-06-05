@@ -82,7 +82,7 @@
 
                 <h3 style="margin-top: 40px; color: #111827; font-size: 1.5rem;">Fasilitas & Keunggulan</h3>
                 <ul class="accessibility-list">
-                    <li><i class="fa-solid fa-key"></i> Total 12 Pintu (Komunitas Islami Ramah Anak)</li>
+                    <li><i class="fa-solid fa-key"></i> Total <span class="total-unit-text" data-id="3">12</span> Pintu (Komunitas Islami Ramah Anak)</li>
                     <li><i class="fa-solid fa-video"></i> Keamanan CCTV 24 Jam Nonstop</li>
                     <li><i class="fa-solid fa-droplet"></i> Bebas Iuran Air Bersih Bulanan</li>
                     <li><i class="fa-solid fa-car"></i> Akses Parkir Kendaraan</li>
@@ -127,23 +127,29 @@
 
     <!-- Google Sheets Sync Script -->
     <script>
-        function processSheetData(response) {
+                function processSheetData(response) {
             try {
                 const rows = response.table.rows;
                 rows.forEach(row => {
-                    if (row.c && row.c.length >= 4 && row.c[0] && row.c[3]) {
+                    if (row.c && row.c.length >= 4 && row.c[0] && row.c[2] && row.c[3]) {
                         const id = row.c[0].v;
+                        const totalUnit = row.c[2].v;
                         const sisaUnit = row.c[3].v;
                         
-                        const badge = document.querySelector(`.status-badge[data-id="${id}"]`);
+                        const badge = document.querySelector(.status-badge[data-id="$id"]);
                         if (badge) {
                             if (sisaUnit > 0) {
-                                badge.textContent = `🔥 SISA ${sisaUnit} UNIT!`;
+                                badge.textContent = ?? SISA $sisaUnit UNIT!;
                                 badge.className = 'badge available status-badge';
                             } else {
-                                badge.textContent = `⛔ FULL BOOKED`;
+                                badge.textContent = ?? FULL BOOKED;
                                 badge.className = 'badge full status-badge';
                             }
+                        }
+                        
+                        const totalText = document.querySelector(.total-unit-text[data-id="$id"]);
+                        if (totalText) {
+                            totalText.textContent = totalUnit;
                         }
                     }
                 });
@@ -158,6 +164,7 @@
     </script>
 </body>
 </html>
+
 
 
 
