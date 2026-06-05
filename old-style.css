@@ -1,0 +1,961 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,800;1,400&family=Outfit:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --gold: #b58d1f;
+    --gold-light: #d4af37;
+    --emerald-dark: #0a3828;
+    --emerald-light: #167a5a;
+    --bg-main: #f9fafb; /* Very light cool grey */
+    --surface-1: #ffffff; /* Pure white */
+    --surface-2: #f3f4f6;
+    --text-main: #111827; /* Near black */
+    --text-muted: #4b5563; /* Grey */
+    --border-subtle: #e5e7eb;
+    
+    --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05);
+    --shadow-hover: 0 20px 40px rgba(10, 56, 40, 0.15);
+    
+    --font-heading: 'Playfair Display', serif;
+    --font-body: 'Outfit', sans-serif;
+    --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    background-color: #f8fafc;
+    background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1.5px, transparent 1.5px);
+    background-size: 35px 35px; /* Dot Grid spacing */
+    color: var(--text-main);
+    font-family: var(--font-body);
+    line-height: 1.7;
+    overflow-x: hidden;
+    position: relative;
+    cursor: none; /* Hide default cursor for custom cursor */
+}
+
+/* ==========================================================================
+   Custom Cursor
+   ========================================================================== */
+.cursor {
+    position: fixed;
+    width: 6px;
+    height: 6px;
+    background: var(--emerald-dark);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 99999; /* Ensure it is above lightbox */
+}
+.cursor-follower {
+    position: fixed;
+    width: 30px;
+    height: 30px;
+    border: 1px solid var(--emerald-dark);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: 99998; /* Ensure it is above lightbox */
+    transition: width 0.3s, height 0.3s, background 0.3s, border-color 0.3s;
+}
+.cursor-follower.active {
+    width: 60px;
+    height: 60px;
+    background: rgba(10, 56, 40, 0.1);
+    border-color: transparent;
+}
+
+/* ==========================================================================
+   Premium Background Textures
+   ========================================================================== */
+.bg-decorations {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: -1;
+    overflow: hidden;
+}
+
+/* Glowing Orbs with Drifting Animation */
+@keyframes driftOrb1 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(15vw, -10vh) scale(1.3); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+@keyframes driftOrb2 {
+    0% { transform: translate(0, 0) scale(1); }
+    50% { transform: translate(-15vw, 10vh) scale(1.2); }
+    100% { transform: translate(0, 0) scale(1); }
+}
+
+.bg-decorations::before, .bg-decorations::after {
+    content: '';
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    z-index: -1;
+}
+.bg-decorations::before {
+    top: -10%;
+    left: -10%;
+    width: 80vw;
+    height: 80vh;
+    background: rgba(22, 122, 90, 0.5);
+    animation: driftOrb1 8s ease-in-out infinite;
+}
+.bg-decorations::after {
+    bottom: -10%;
+    right: -10%;
+    width: 90vw;
+    height: 90vh;
+    background: rgba(212, 175, 55, 0.4);
+    animation: driftOrb2 10s ease-in-out infinite;
+}
+
+/* Massive Watermark Text */
+.watermark-text {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 22vw;
+    font-weight: 800;
+    color: rgba(0, 0, 0, 0.02);
+    font-family: var(--font-body);
+    white-space: nowrap;
+    letter-spacing: -5px;
+}
+
+/* Geometric Lines (Arcs) */
+.circle-line-1, .circle-line-2 {
+    position: absolute;
+    border-radius: 50%;
+    border: 1px dashed rgba(0, 0, 0, 0.05);
+}
+.circle-line-1 {
+    top: -20%;
+    left: -15%;
+    width: 50vw;
+    height: 50vw;
+}
+.circle-line-2 {
+    bottom: -30%;
+    right: -20%;
+    width: 70vw;
+    height: 70vw;
+    border-style: solid;
+    border-color: rgba(212, 175, 55, 0.04);
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    color: var(--emerald-dark);
+    font-weight: 700;
+}
+
+.text-gold {
+    color: var(--gold);
+    background: linear-gradient(90deg, var(--gold) 0%, #fff2a8 50%, var(--gold) 100%);
+    background-size: 200% auto;
+    color: transparent;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: shimmer 4s linear infinite;
+}
+
+@keyframes shimmer {
+    to { background-position: 200% center; }
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-left: 5%;
+    padding-right: 5%;
+}
+
+/* ==========================================================================
+   Navbar: Bright Glass Capsule
+   ========================================================================== */
+.navbar {
+    position: fixed;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 800px;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 50px;
+    padding: 1rem 2.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    transition: var(--transition);
+}
+
+.navbar.scrolled {
+    width: 100%;
+    max-width: 100%;
+    top: 0;
+    border-radius: 0;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.9);
+    padding: 1.2rem 5%;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.logo {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--emerald-dark);
+    text-decoration: none;
+}
+.logo span { color: var(--gold); }
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2.5rem;
+    align-items: center;
+}
+.nav-links a {
+    color: var(--text-main);
+    text-decoration: none;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    transition: var(--transition);
+}
+.nav-links a:hover { color: var(--emerald-light); }
+
+.hamburger { display: none; cursor: pointer; color: var(--emerald-dark); font-size: 1.5rem; }
+
+/* ==========================================================================
+   Hero Section: Authentic Mood Board
+   ========================================================================== */
+.hero {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    padding-top: 100px;
+    background-color: var(--bg-main);
+}
+
+.hero-container {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.hero-text {
+    max-width: 650px;
+}
+
+.hero-text .badge {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    background: rgba(22, 122, 90, 0.1);
+    color: var(--emerald-light);
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 2rem;
+}
+
+.hero h1 {
+    font-size: 4.5rem;
+    line-height: 1.1;
+    margin-bottom: 1.5rem;
+    letter-spacing: -2px;
+}
+
+.hero p {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 1.5rem;
+}
+
+/* Mini Grid for Authentic Photos */
+.hero-bento-gallery {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.hero-bento-img {
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: var(--shadow-hover);
+    transition: transform 0.5s ease;
+}
+
+.hero-bento-img:hover {
+    transform: translateY(-5px) scale(1.03);
+}
+
+.hero-bento-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.img-1 {
+    grid-column: 1 / -1;
+    height: 300px;
+}
+.img-2 {
+    height: 220px;
+}
+.img-3 {
+    height: 220px;
+}
+
+.btn-primary, .btn-outline {
+    display: inline-block;
+    padding: 1.2rem 3rem;
+    border-radius: 50px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: var(--transition);
+    font-family: var(--font-body);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.btn-primary {
+    background: var(--emerald-dark);
+    color: white;
+    box-shadow: 0 10px 20px rgba(10, 56, 40, 0.2);
+}
+.btn-primary:hover {
+    background: var(--emerald-light);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(22, 122, 90, 0.3);
+}
+.btn-outline {
+    border: 2px solid var(--emerald-dark);
+    color: var(--emerald-dark);
+    background: transparent;
+}
+.btn-outline:hover {
+    background: rgba(10, 56, 40, 0.05);
+    transform: translateY(-3px);
+}
+
+/* ==========================================================================
+   Sections Base
+   ========================================================================== */
+section { padding: 120px 0; }
+.section-header {
+    text-align: center;
+    margin-bottom: 80px;
+}
+.section-header h2 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+.section-header p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Utility Classes for Ultra-Premium Look
+   ========================================================================== */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.35) !important;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.4) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05), inset 0 0 0 1px rgba(255, 255, 255, 0.5) !important;
+    position: relative;
+}
+
+.glass-panel::before {
+    content: '';
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    padding: 1px; 
+    background: radial-gradient(400px circle at var(--mouse-x, -500px) var(--mouse-y, -500px), rgba(255, 255, 255, 1), transparent 40%);
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+    z-index: 10;
+}
+
+/* ==========================================================================
+   Bento Box Properties (Clean White)
+   ========================================================================== */
+#properties {
+    background: linear-gradient(to bottom, transparent, rgba(22, 122, 90, 0.02) 10%, rgba(22, 122, 90, 0.02) 90%, transparent);
+}
+
+.properties-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+}
+.bento-card {
+    background: var(--surface-1);
+    border-radius: 30px;
+    overflow: hidden;
+    position: relative;
+    transition: var(--transition);
+    box-shadow: var(--shadow-soft);
+    border: 1px solid var(--surface-1); /* Invisible border for layout stability */
+}
+.bento-card:hover {
+    transform: translateY(-10px);
+    box-shadow: var(--shadow-hover);
+}
+.bento-img {
+    height: 450px;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 12px;
+}
+.bento-img img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+    will-change: transform;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.bento-card:hover .bento-img img { transform: scale(1.08); }
+
+.bento-content {
+    padding: 3rem;
+}
+.bento-tag {
+    display: inline-block;
+    background: rgba(212,175,55,0.15);
+    color: var(--gold);
+    padding: 0.5rem 1.2rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+.bento-content h3 {
+    font-size: 2.2rem;
+    margin-bottom: 2rem;
+}
+.bento-features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2.5rem;
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--border-subtle);
+}
+.bento-features span {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    font-weight: 500;
+}
+.bento-features i { color: var(--emerald-light); font-size: 1.2rem; }
+.bento-action {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.price-note {
+    font-size: 0.95rem;
+    color: var(--text-main);
+    font-weight: 600;
+}
+.price-note i { color: #25D366; margin-right: 5px; font-size: 1.2rem;}
+
+/* ==========================================================================
+   Trust Engine Marquee
+   ========================================================================== */
+.marquee-container {
+    background: var(--emerald-dark);
+    color: var(--gold-light);
+    padding: 12px 0;
+    overflow: hidden;
+    display: flex;
+    position: relative;
+    width: 100vw;
+    left: 50%;
+    transform: translateX(-50%);
+    margin-bottom: 50px;
+    box-shadow: 0 4px 20px rgba(10, 56, 40, 0.4);
+    border-top: 1px solid rgba(212, 175, 55, 0.2);
+    border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+}
+.marquee-group {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    min-width: 100%;
+    animation: scrollX 20s linear infinite;
+}
+.marquee-group span {
+    padding: 0 2rem;
+    font-weight: 600;
+    font-size: 0.95rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+@keyframes scrollX {
+    from { transform: translateX(0); }
+    to { transform: translateX(-100%); }
+}
+
+/* ==========================================================================
+   Clean Gallery Grid
+   ========================================================================== */
+.gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+.gal-item {
+    border-radius: 16px;
+    overflow: hidden;
+    position: relative;
+    height: 300px;
+    box-shadow: var(--shadow-soft);
+}
+.gal-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    will-change: transform;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), filter 0.4s ease;
+}
+.gal-item:hover img { transform: scale(1.08); filter: brightness(0.75); }
+
+.gal-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(10,56,40,0.9), transparent);
+    display: flex;
+    align-items: flex-end;
+    padding: 2rem;
+    pointer-events: none;
+    opacity: 0;
+    transition: var(--transition);
+}
+.gal-item:hover .gal-overlay { opacity: 1; }
+.gal-overlay span {
+    color: white;
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* ==========================================================================
+   Rules & Values (Bento Cards)
+   ========================================================================== */
+.values-bento {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+}
+.value-card {
+    background: var(--surface-1);
+    padding: 3rem;
+    border-radius: 30px;
+    text-align: left;
+    transition: var(--transition);
+    box-shadow: var(--shadow-soft);
+}
+.value-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+.value-icon {
+    font-size: 3rem;
+    color: var(--emerald-light);
+    margin-bottom: 2rem;
+}
+.value-card h4 {
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+}
+.value-card p {
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Location & Access Section
+   ========================================================================== */
+.location-bento {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.loc-main {
+    padding: 3rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.loc-icon-large {
+    font-size: 3.5rem;
+    color: var(--emerald-light);
+    margin-bottom: 1.5rem;
+}
+
+.loc-main h3 {
+    font-size: 2.2rem;
+    margin-bottom: 1rem;
+}
+
+.address-text {
+    font-size: 1.15rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    line-height: 1.8;
+}
+
+.btn-small {
+    padding: 0.8rem 1.5rem;
+    font-size: 0.85rem;
+}
+
+.loc-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.loc-item {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.loc-item i {
+    font-size: 2rem;
+    color: var(--gold);
+    margin-bottom: 1rem;
+}
+
+.loc-info h4 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+}
+
+.loc-list {
+    list-style: none;
+}
+
+.loc-list li {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.loc-list li strong {
+    color: var(--text-main);
+    background: rgba(22, 122, 90, 0.1);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.85rem;
+}
+
+.loc-info p {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+}
+
+/* ==========================================================================
+   Footer
+/* ==========================================================================
+   Wall of Love (Reviews)
+   ========================================================================== */
+.review-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+.review-card {
+    padding: 1rem;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: var(--transition);
+}
+.review-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+.review-img-wrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.review-img {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+    border-radius: 16px;
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+footer {
+    background: var(--surface-1);
+    padding: 80px 0 30px;
+    border-top: 1px solid var(--border-subtle);
+}
+.footer-bento {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 4rem;
+    margin-bottom: 60px;
+}
+.footer-brand h2 { font-size: 2.5rem; margin-bottom: 1rem; }
+.footer-brand p { max-width: 400px; color: var(--text-muted); }
+.footer-contact h4 { margin-bottom: 1.5rem; font-size: 1.5rem; color: var(--emerald-dark); }
+.footer-contact p {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: var(--text-main);
+    font-weight: 500;
+}
+.footer-contact i { color: var(--emerald-light); margin-top: 5px; }
+
+.footer-bottom {
+    text-align: center;
+    padding-top: 2rem;
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-subtle);
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   Floating Elements & Animations
+   ========================================================================== */
+.floating-wa {
+    position: fixed;
+    bottom: 40px;
+    right: 40px;
+    background: #25D366;
+    color: white;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    z-index: 100;
+    box-shadow: 0 10px 30px rgba(37,211,102,0.4);
+    text-decoration: none;
+    transition: var(--transition);
+}
+.floating-wa:hover { transform: scale(1.1) rotate(-10deg); }
+
+.reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Staggered Animation Delays for wow effect */
+.reveal.active .prop-card:nth-child(1) { transition-delay: 0.2s; }
+.reveal.active .prop-card:nth-child(2) { transition-delay: 0.4s; }
+
+.reveal.active .value-card:nth-child(1) { transition-delay: 0.2s; }
+.reveal.active .value-card:nth-child(2) { transition-delay: 0.4s; }
+.reveal.active .value-card:nth-child(3) { transition-delay: 0.6s; }
+
+.reveal.active .loc-item:nth-child(1) { transition-delay: 0.2s; }
+.reveal.active .loc-item:nth-child(2) { transition-delay: 0.4s; }
+.reveal.active .loc-item:nth-child(3) { transition-delay: 0.6s; }
+.reveal.active .loc-item:nth-child(4) { transition-delay: 0.8s; }
+
+/* Let cards inherit the transition when inside a reveal parent */
+.reveal .prop-card, .reveal .value-card, .reveal .loc-item {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: all 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.active .prop-card, .reveal.active .value-card, .reveal.active .loc-item, .reveal.active .review-card {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* ==========================================================================
+   Wall of Love (Reviews)
+   ========================================================================== */
+.review-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+.review-card {
+    padding: 0.5rem;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    transition: var(--transition);
+}
+.review-card:hover {
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-hover);
+}
+.review-img-wrapper {
+    border-radius: 16px;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+.review-img {
+    width: 100%;
+    height: auto;
+    object-fit: contain; /* Prevent cropping of review text */
+    border-radius: 16px;
+}
+
+/* ==========================================================================
+   Premium Lightbox Modal
+   ========================================================================== */
+.lightbox {
+    display: none;
+    position: fixed;
+    z-index: 10000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(10, 56, 40, 0.85); /* Emerald dark with opacity */
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.lightbox.show {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    opacity: 1;
+}
+.lightbox-content {
+    margin: auto;
+    display: block;
+    max-width: 90%;
+    max-height: 85vh;
+    border-radius: 16px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+    transform: scale(0.95);
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.lightbox.show .lightbox-content {
+    transform: scale(1);
+}
+.lightbox-close {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    color: var(--gold-light);
+    font-size: 50px;
+    font-weight: 300;
+    transition: all 0.3s ease;
+    cursor: none;
+    z-index: 10001;
+}
+.lightbox-close:hover {
+    color: #fff;
+    transform: scale(1.2);
+}
+#lightbox-caption {
+    margin-top: 20px;
+    display: block;
+    width: 80%;
+    max-width: 700px;
+    text-align: center;
+    color: #fff;
+    font-size: 1.2rem;
+    font-family: var(--font-heading);
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   Mobile Responsive
+   ========================================================================== */
+@media(max-width: 992px) {
+    .properties-bento, .values-bento, .footer-bento, .location-bento { grid-template-columns: 1fr; }
+    .loc-grid { grid-template-columns: 1fr; }
+    .gallery-grid { grid-template-columns: 1fr 1fr; }
+    .gal-item { height: 250px; }
+    
+    .hero-container { grid-template-columns: 1fr; text-align: center; gap: 3rem; }
+    .hero h1 { font-size: 3.5rem; }
+    .hero p { font-size: 1.1rem; }
+    .hero-buttons { flex-direction: column; }
+    .img-1 { height: 250px; }
+    .img-2, .img-3 { height: 180px; }
+    
+    .navbar { padding: 1rem 1.5rem; top: 15px; width: 95%; }
+    .nav-links { display: none; }
+    .hamburger { display: block; }
+}
