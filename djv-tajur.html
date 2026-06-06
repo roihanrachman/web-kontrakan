@@ -83,7 +83,7 @@
 
                 <h3 style="margin-top: 40px; color: #111827; font-size: 1.5rem;">Fasilitas & Keunggulan</h3>
                 <ul class="accessibility-list">
-                    <li><i class="fa-solid fa-key"></i> Total <span class="total-unit-text" data-id="1">9</span> Pintu Eksklusif (Privasi Terjaga)</li>
+                    <li><i class="fa-solid fa-key"></i> Total <span class="total-unit-text" data-id="1">9</span> Unit Eksklusif (Privasi Terjaga)</li>
                     <li><i class="fa-solid fa-video"></i> Keamanan CCTV 24 Jam Nonstop</li>
                     <li><i class="fa-solid fa-droplet"></i> Bebas Iuran Air Bersih Bulanan</li>
                     <li><i class="fa-solid fa-car"></i> Akses Parkir Kendaraan</li>
@@ -180,7 +180,7 @@
 
     <!-- Google Sheets Sync Script -->
     <script>
-                function processSheetData(response) {
+                        function processSheetData(response) {
             try {
                 const rows = response.table.rows;
                 rows.forEach(row => {
@@ -189,18 +189,18 @@
                         const totalUnit = row.c[2].v;
                         const sisaUnit = row.c[3].v;
                         
-                        const badge = document.querySelector(.status-badge[data-id="$id"]);
+                        const badge = document.querySelector(`.status-badge[data-id="${id}"]`);
                         if (badge) {
                             if (sisaUnit > 0) {
-                                badge.textContent = ?? SISA $sisaUnit UNIT!;
+                                badge.textContent = `✦ Tersedia ${sisaUnit} Unit`;
                                 badge.className = 'badge available status-badge';
                             } else {
-                                badge.textContent = ?? FULL BOOKED;
+                                badge.textContent = `✦ Unit Penuh (Tersewa)`;
                                 badge.className = 'badge full status-badge';
                             }
                         }
                         
-                        const totalText = document.querySelector(.total-unit-text[data-id="$id"]);
+                        const totalText = document.querySelector(`.total-unit-text[data-id="${id}"]`);
                         if (totalText) {
                             totalText.textContent = totalUnit;
                         }
@@ -217,6 +217,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
